@@ -7,7 +7,7 @@ from typing import (
     Callable,
     Optional,
     Tuple,
-    # List,  # TODO: for python<3.9 one needs to use `List[]` instead of `list[]`.
+    List,  # TODO: for python<3.9 one needs to use `List[]` instead of `list[]`.
 )
 import math
 import torch
@@ -293,7 +293,7 @@ class NormActivationConv(torch.nn.Sequential):
         if bias is None:
             bias = norm_layer is None
 
-        layers = list()
+        layers = List()
 
         if norm_layer is not None:
             layers.append(norm_layer(in_channels))
@@ -360,8 +360,8 @@ class BottleneckTransform(nn.Sequential):
         kernel: int,
         stride: int,
         dilation: int,
-        norm_layer: list[Callable[..., nn.Module]],
-        activation_layer: list[Callable[..., nn.Module]],
+        norm_layer: List[Callable[..., nn.Module]],
+        activation_layer: List[Callable[..., nn.Module]],
         group_width: int,
         bottleneck_multiplier: float,
         se_ratio: Optional[float],
@@ -444,8 +444,8 @@ class BottleneckBlock(nn.Module):
         kernel: int,
         stride: int,
         dilation: int,
-        norm_layer: list[Callable[..., nn.Module]],
-        activation_layer: list[Callable[..., nn.Module]],
+        norm_layer: List[Callable[..., nn.Module]],
+        activation_layer: List[Callable[..., nn.Module]],
         group_width: int,
         bottleneck_multiplier: float,
         se_ratio: Optional[float],
@@ -527,8 +527,8 @@ class Stage(nn.Sequential):
         kernel: int,
         stride: int,
         dilation: int,
-        norm_layer: list[Callable[..., nn.Module]],
-        activation_layer: list[Callable[..., nn.Module]],
+        norm_layer: List[Callable[..., nn.Module]],
+        activation_layer: List[Callable[..., nn.Module]],
         group_width: int,
         bottleneck_multiplier: float,
         se_ratio: Optional[float],
@@ -564,7 +564,7 @@ class Stage(nn.Sequential):
     def forward(self, x: Tensor) -> Tensor:
         if self.dense_ratio:
             assert self.dense_ratio > 0
-            features = list([x])
+            features = List([x])
             for i, module in enumerate(self):
                 input = features[-1]
                 if i > 2:
@@ -633,26 +633,26 @@ class Stem(nn.Module):
 class ConfigurableModel(nn.Module):
     def __init__(
         self,
-        stage_widths: list[int],  # output width of each stage
+        stage_widths: List[int],  # output width of each stage
         kernel: int,  # kernel for non-pointwise conv
-        strides: list[int],  # stride in each stage
+        strides: List[int],  # stride in each stage
         dilation: int,  # dilation for non-pointwise conv
-        norm_layer: list[
+        norm_layer: List[
             Callable[..., nn.Module]
         ],  # norm layer in each block, length 3 for bottleneck
-        activation_layer: list[
+        activation_layer: List[
             Callable[..., nn.Module]
         ],  # activation layer in each block, length 3 for bottleneck
-        group_widths: list[
+        group_widths: List[
             int
         ],  # group conv width in each stage, groups = width_out * bottleneck_multiplier // group_width
-        bottleneck_multipliers: list[
+        bottleneck_multipliers: List[
             float
         ],  # bottleneck_multiplier > 1 for inverted bottleneck
         downsample_norm: Callable[
             ..., nn.Module
         ],  # norm layer in downsampling shortcut
-        depths: list[int],  # depth in each stage
+        depths: List[int],  # depth in each stage
         dense_ratio: Optional[float],  # dense connection ratio
         stem_type: Callable[..., nn.Module],  # stem stage
         stem_width: int,  # stem stage output width
@@ -696,7 +696,7 @@ class ConfigurableModel(nn.Module):
 
         # stages
         current_width = stem_width
-        stages = list()
+        stages = List()
         for i, (
             width_out,
             stride,
@@ -767,7 +767,7 @@ class ConfigurableModel(nn.Module):
 
 
 class NormalizedConfigurableModel(ConfigurableModel):
-    def __init__(self, mean: list[float], std: list[float], **kwargs: Any):
+    def __init__(self, mean: List[float], std: List[float], **kwargs: Any):
         super().__init__(**kwargs)
 
         assert len(mean) == len(std)
